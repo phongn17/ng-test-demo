@@ -9,8 +9,20 @@ describe('JediService', () => {
     providers: [JediService]
   }));
 
-  it('should be created', () => {
+  it('testing getJedis() and expect a list of jedis back', () => {
     const service: JediService = TestBed.get(JediService);
-    expect(service).toBeTruthy();
+    const http = TestBed.get(HttpTestingController);
+
+    // define our mock data
+    const expected = [{ name: 'Luke' }, { name: 'Darth Vader' }];
+
+    // we actively call getJedis() on jediService, then set that response to our 'actual' variable
+    service.getJedis().subscribe(data => {
+      const actual = data;
+      expect(actual).toEqual(expected);
+    });
+
+    // when someone calls URL /api/jedis, we will resolve that asynchronous operation with .flush() while also answering with 'expected' varibale as response data
+    http.expectOne('/api/jedis').flush(expected);
   });
 });
